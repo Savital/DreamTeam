@@ -1,7 +1,8 @@
+version: 2
 jobs:
   build:
     pod:
-      - machine: python:2.7.15
+      - image: python:2.7.15
         environment:
           FLASK_CONFIG: testing
           DATABASE_URL: mysql://ubuntu@localhost/circle_test
@@ -12,4 +13,3 @@ jobs:
       - shell:
           name: Run Tests
           command: nose2
-
