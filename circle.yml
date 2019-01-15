@@ -1,6 +1,9 @@
-machine:
-  python:
-    version: 2.7.10
-test:
-  override:
-    - nose2
+version: 2
+jobs:
+  build:
+    machine:
+      python:
+        version: 2.7.10
+    steps:
+       - run: pip install -r requirements.txt
+       - run: ls
