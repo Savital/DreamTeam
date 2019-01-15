@@ -1,6 +1,15 @@
-machine:
-  python:
-    version: 2.7.15
-test:
-  override:
-    - nose2
+jobs:
+  build:
+    pod:
+      - image: python:2.7.15
+        environment:
+          FLASK_CONFIG: testing
+          DATABASE_URL: mysql://ubuntu@localhost/circle_test
+    steps:
+      - shell:
+          name: Install Dependencies
+          command: pip install -r requirements.txt
+      - shell:
+          name: Run Tests
+          command: nose2
+
