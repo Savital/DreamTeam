@@ -85,18 +85,3 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role: {}>'.format(self.name)
-
-
-"""
-class Visitor(db.Model):
-    
-
-    __tablename__ = 'visitors'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), unique=True)
-    description = db.Column(db.String(200))
-    telephone = db.Column(db.String(60))
-
-    def __repr__(self):
-        return '<Visitor: {}>'.format(self.name)"""
