@@ -46,3 +46,28 @@ $ python tests.py
 nose2 --with-coverage
 
 ```
+
+Результаты оценки покрытия
+
+```bash
+app/__init__.py                                                                            39      4    90%
+app/admin/__init__.py                                                                       3      0   100%
+app/admin/forms.py                                                                         17      0   100%
+app/admin/views.py                                                                        120     93    23%
+app/auth/__init__.py                                                                        3      0   100%
+app/auth/forms.py                                                                          22      4    82%
+app/auth/views.py                                                                          31     18    42%
+app/home/__init__.py                                                                        3      0   100%
+app/home/views.py                                                                          13      4    69%
+app/models.py                                                                              70      8    89%
+config.py                                                                                   9      0   100%
+example.py                                                                                 12     12     0%
+instance/config.py                                                                          2      0   100%
+run.py                                                                                      6      6     0%
+test_errors.py                                                                             41      2    95%
+test_func.py                                                                              327      2    99%
+test_integration.py                                                                       139      2    99%
+test_models.py                                                                            224      2    99%
+test_views.py                                                                              67      2    97%
+
+```
