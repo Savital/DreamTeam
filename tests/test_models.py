@@ -40,7 +40,6 @@ class TestBase(TestCase):
         db.drop_all()
 
 
-
 class TestModels(TestBase):
     def test_employee_model_verifyPasswordIfFalse(self):
         # create test non-admin user

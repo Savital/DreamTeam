@@ -31,17 +31,6 @@ class TestBase(TestCase):
         db.drop_all()
         db.create_all()
 
-        # create test admin user
-        admin = Employee(username="admin", password="admin2016", is_admin=True)
-
-        # create test non-admin user
-        employee = Employee(username="test_user", password="test2016")
-
-        # save users to database
-        db.session.add(admin)
-        db.session.add(employee)
-        db.session.commit()
-
     def tearDown(self):
         """
         Will be called after every test
