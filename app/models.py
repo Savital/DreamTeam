@@ -23,6 +23,12 @@ class Employee(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     is_admin = db.Column(db.Boolean, default=False)
 
+    def generatePasswordHash(self, password):
+        return generate_password_hash(password)
+
+    def checkPasswordHash(self, realPassword, password):
+        return check_password_hash(realPassword, password)
+
     @property
     def password(self):
         """
@@ -85,3 +91,43 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role: {}>'.format(self.name)
+
+
+class Sheduleplan(db.Model):
+    """
+    Create a Sheduleplan table
+    """
+
+    __tablename__ = 'sheduleplan'
+
+    id = db.Column(db.Integer, primary_key=True)
+    jobname = db.Column(db.String(60))
+    username = db.Column(db.String(60), index=True, unique=True)
+    description = db.Column(db.String(200))
+
+    def __repr__(self):
+        return '<Sheduleplan: {}>'.format(self.jobname)
+
+def generatePassword(employees, password):
+    employees.password_hash = employees.generatePasswordHash(password)
+
+def verifyPassword(employees, password):
+    return employees.checkPasswordHash(employees.password_hash, password)
+
+def getUnassignedJobs(sheduleplan):
+    return sheduleplan.query.filter_by(username="").all()
+
+def getSpongers(sheduleplan, employees):
+    men = employees.query.all()
+    spongers = []
+    for man in men:
+        if sheduleplan.query.filter_by(username=man.username).first().username == man.username:
+            spongers.append(man)
+    return spongers
+
+def cntMenOnJob(sheduleplan, jobname):
+    men = sheduleplan.query.filter_by(jobname=jobname).all()
+    return len(men)
+
+def loadUser(employees, user_id):
+    return employees.query.get(int(user_id))

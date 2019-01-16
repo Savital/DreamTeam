@@ -1,12 +1,13 @@
 import os
 import unittest
-from mock import patch, Mock, MagicMock
+from mock import patch, Mock, MagicMock, create_autospec
 
 from flask import abort, url_for
 from flask_testing import TestCase
 
 from app import create_app, db
-from app.models import Department, Employee, Role
+from app.models import Department, Employee, Role, Sheduleplan, cntMenOnJob, loadUser, generatePassword, \
+    verifyPassword, getUnassignedJobs, getSpongers
 
 
 class TestBase(TestCase):
@@ -41,6 +42,78 @@ class TestBase(TestCase):
 
 
 class TestModels(TestBase):
+
+    def test_getUnassignedJobs(self):
+        mock = MagicMock()
+
+        mock.query.filter_by(username="").all = create_autospec(mock.query.filter_by.all, return_value=[1, 2, 3])
+
+        jobs = getUnassignedJobs(mock)
+
+        mock.query.filter_by().all.assert_called_with(username="")
+        mock.query.filter_by().all.assert_called()
+        self.assertEqual(jobs, [1, 2, 3])
+
+    def test_getSpongers(self):
+        mockSheduleplan = MagicMock()
+        mockEmployees = MagicMock()
+        mockEmployees.query.all = create_autospec(mockEmployees.query.all, return_value=[Employee(username="e1"),
+                                                                                         Employee(username="sponger"),
+                                                                                         Employee(username="e3"),
+                                                                                         Employee(username="e4")])
+        mockSheduleplan.query.filter_by().first = create_autospec(mockSheduleplan.query.filter_by.first,
+                                                                  return_value=Employee(username="sponger"))
+
+        spongers = getSpongers(mockSheduleplan, mockEmployees)
+
+        print mockSheduleplan.mock_calls
+
+        mockEmployees.query.all.assert_called()
+        mockSheduleplan.query.filter_by().first.assert_called()
+        mockSheduleplan.query.filter_by().first.assert_called_with(username='e1')
+        mockSheduleplan.query.filter_by().first.assert_called_with(username='sponger')
+        mockSheduleplan.query.filter_by().first.assert_called_with(username='e2')
+        mockSheduleplan.query.filter_by().first.assert_called_with(username='e3')
+        self.assertEqual(spongers, [Employee(username="sponger")])
+
+    def test_sheduleplan_cntMenOnJob(self):
+        mock = MagicMock()
+        mock.query.filter_by(jobname="testjob").all = create_autospec(mock.query.filter_by.all, return_value=[1, 2, 3])
+
+        count = cntMenOnJob(mock, "testjob")
+
+        mock.query.filter_by.assert_called_with(jobname="testjob")
+        mock.query.filter_by().all.assert_called()
+        self.assertEqual(count, 3)
+
+    def test_loadUser(self):
+        mock = MagicMock()
+        mock.query.get = create_autospec(mock.query.get, return_value="testuser")
+
+        user = loadUser(mock, 1)
+
+        mock.query.get.assert_called_with(1)
+        self.assertEqual(user, "testuser")
+
+    def test_generatePassword(self):
+        mock = MagicMock()
+        mock.generatePasswordHash = create_autospec(mock.generatePasswordHash, return_value="testhash")
+
+        generatePassword(mock, "testpassword")
+
+        mock.generatePasswordHash.assert_called_with("testpassword")
+        self.assertEqual(mock.password_hash, "testhash")
+
+    def test_verifyPassword(self):
+        mock = MagicMock()
+
+        mock.password_hash = "testhash"
+        mock.checkPasswordHash = create_autospec(mock.checkPasswordHash, return_value=True)
+        result = verifyPassword(mock, "testpassword")
+
+        mock.checkPasswordHash.assert_called_once_with("testhash", "testpassword")
+        self.assertTrue(result)
+
     def test_employee_model_verifyPasswordIfFalse(self):
         # create test non-admin user
         employee = Employee(username="test_user", email="test@mail.ru", first_name="firstname", last_name="lastname",
